@@ -1,0 +1,144 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 3,
+    "passes": 2,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-04-23T16:18:50.384Z",
+    "end": "2025-04-23T16:19:22.140Z",
+    "duration": 31756,
+    "testsRegistered": 3,
+    "passPercent": 66.66666666666666,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "0bddded2-07e5-455a-a618-c0d13b42b9f6",
+      "title": "",
+      "fullFile": "D:\\boothcamp QA\\HW11-Web UI Automation Advance Part 2\\test\\sesi-11\\test-hw11.js",
+      "file": "\\test\\sesi-11\\test-hw11.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [
+        {
+          "title": "Login Success",
+          "fullTitle": "Login Success",
+          "timedOut": false,
+          "duration": 8931,
+          "state": "failed",
+          "speed": null,
+          "pass": false,
+          "fail": true,
+          "pending": false,
+          "context": null,
+          "code": "let options = new chrome.Options();\ndriver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();\n\nawait driver.get('https://www.saucedemo.com');\nconst title = await driver.getTitle();\nconsole.log(\"test case chrome\")\n\nassert.strictEqual(title, 'Swag Labs');\nlet inputUsername = await driver.findElement(By.css('[data-test=\"username\"]'))\nlet inputUsernamePOM = await driver.findElement(page_login.inputUsername)\n\nlet inputPassword = await driver.findElement(By.xpath('//*[@data-test=\"password\"]'))\nlet inputPasswordPOM= await driver.findElement(page_login.inputPassword)\nlet inputbuttonLogin = await driver.findElement(By.className('submit-button btn_action'))\nlet inputbuttonLoginPOM = await driver.findElement(page_login.inputbuttonLogin)\n\nawait inputUsername.sendKeys('standard_user')\nawait inputPassword.sendKeys('secret_sauce')\nawait inputbuttonLogin.click()\n\nlet buttonCart = await driver.wait(\n    until.elementLocated(By.xpath('//*[@data-test=\"shopping-cart-link\"]')), \n    3000\n);\nawait buttonCart.isDisplayed()\nlet textAppLogo = await driver.findElement(By.className('app_logo'))\nlet logotext = await textAppLogo.getText();\nassert.strictEqual(logotext, 'Swag Labs')\n\nawait driver.sleep(3000);\nawait driver.quit();",
+          "err": {
+            "message": "ReferenceError: driver is not defined",
+            "estack": "ReferenceError: driver is not defined\n    at Context.<anonymous> (file:///D:/boothcamp%20QA/HW11-Web%20UI%20Automation%20Advance%20Part%202/test/sesi-11/test-hw11.js:74:16)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)",
+            "diff": null
+          },
+          "uuid": "f0fea340-0501-426f-bfe1-508b0b1817fc",
+          "parentUUID": "0bddded2-07e5-455a-a618-c0d13b42b9f6",
+          "isHook": false,
+          "skipped": false
+        }
+      ],
+      "suites": [
+        {
+          "uuid": "19cedd81-73a1-48e2-accd-42153d0f47e7",
+          "title": "Google Search Test",
+          "fullFile": "D:\\boothcamp QA\\HW11-Web UI Automation Advance Part 2\\test\\sesi-11\\test-hw11.js",
+          "file": "\\test\\sesi-11\\test-hw11.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Visit SauceDemo dan cek page title",
+              "fullTitle": "Google Search Test Visit SauceDemo dan cek page title",
+              "timedOut": false,
+              "duration": 7008,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "let options = new chrome.Options();\noptions.addArguments(\"--headless\");\n\ndriver = await new Builder().forBrowser('chrome').build();\n  \nawait driver.get('https://www.saucedemo.com');\nconst title = await driver.getTitle();\nlet ss_full = await driver.takeScreenshot();\nfs.writeFileSync(\"full_screenshot.png\", Buffer.from(ss_full, \"base64\"));\n\nlet inputUsernamePOM = await driver.findElement(page_login.inputUsername)\nlet ss_inputusername = await inputUsernamePOM.takeScreenshot();\nfs.writeFileSync(\"inputsername.png\", Buffer.from(ss_inputusername, \"base64\"));\ndriver.quit();",
+              "err": {},
+              "uuid": "82073b35-2dae-45b1-9db4-57366a14011b",
+              "parentUUID": "19cedd81-73a1-48e2-accd-42153d0f47e7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Cek Visual halaman login",
+              "fullTitle": "Google Search Test Cek Visual halaman login",
+              "timedOut": false,
+              "duration": 15750,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();\n   await driver.get('https://www.saucedemo.com');\n   const title = await driver.getTitle();\n   assert.strictEqual(title, 'Swag Labs');\n   let screenshot = await driver.takeScreenshot();\n   let imgBuffer = Buffer.from(screenshot, \"base64\");\n   fs.writeFileSync(\"current.png\", imgBuffer);\n\n    \n   if (!fs.existsSync(\"baseline.png\")) {\n       fs.copyFileSync(\"current.png\", \"baseline.png\");\n       console.log(\"Baseline image saved.\");\n   }\n   let img1 = PNG.sync.read(fs.readFileSync(\"baseline.png\"));\n   let img2 = PNG.sync.read(fs.readFileSync(\"current.png\"));\n   let { width, height } = img1;\n   let diff = new PNG({ width, height });\n   let numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: 0.1 });\n   fs.writeFileSync(\"diff.png\", PNG.sync.write(diff));\n   if (numDiffPixels > 0) {\n       console.log(`Visual differences found! Pixels different: ${numDiffPixels}`);\n   } else {\n       console.log(\"No visual differences found.\");\n   }\n   driver.quit()",
+              "err": {},
+              "uuid": "2a573540-58af-46e2-894a-158bbc78afb7",
+              "parentUUID": "19cedd81-73a1-48e2-accd-42153d0f47e7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "82073b35-2dae-45b1-9db4-57366a14011b",
+            "2a573540-58af-46e2-894a-158bbc78afb7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 22758,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 60000
+        }
+      ],
+      "passes": [],
+      "failures": [
+        "f0fea340-0501-426f-bfe1-508b0b1817fc"
+      ],
+      "pending": [],
+      "skipped": [],
+      "duration": 8931,
+      "root": true,
+      "rootEmpty": false,
+      "_timeout": 60000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.8.2"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}
