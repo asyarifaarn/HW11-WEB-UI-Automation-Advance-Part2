@@ -5,27 +5,69 @@ import chrome from 'selenium-webdriver/chrome.js';
 import fs from 'fs';
 import { PNG } from "pngjs";
 import pixelmatch from "pixelmatch";
-import page_login from '../../..pages/page_login.js';
+import page_login from '../../pages/page_login.js';
 
 
 describe('Google Search Test', function () {
     let driver;
-    it.only('Visit SauceDemo dan cek page title', async function () {
+    it('Visit SauceDemo dan cek page title', async function () {
         let options = new chrome.Options();
+        options.addArguments("--headless");
+        
         driver = await new Builder().forBrowser('chrome').build();
   
         await driver.get('https://www.saucedemo.com');
         const title = await driver.getTitle();
 
         let ss_full = await driver.takeScreenshot();
-        fs.writerFileSync("full_screenshot.png", Buffer.from(ss_full, "base64"));
+        fs.writeFileSync("full_screenshot.png", Buffer.from(ss_full, "base64"));
         
         let inputUsernamePOM = await driver.findElement(page_login.inputUsername)
         let ss_inputusername = await inputUsernamePOM.takeScreenshot();
-        fs.writerFileSync("inputusername.png", Buffer.from(ss_inputusername, "base64"));
+        fs.writeFileSync("inputsername.png", Buffer.from(ss_inputusername, "base64"));
 
         driver.quit();
     })
+
+    it('Cek Visual halaman login', async function () {
+     
+        driver = await new Builder().forBrowser('chrome').build();
+        await driver.get('https://www.saucedemo.com');
+
+        const title = await driver.getTitle();
+        assert.strictEqual(title, 'Swag Labs');
+
+        let screenshot = await driver.takeScreenshot();
+        let imgBuffer = Buffer.from(screenshot, "base64");
+        fs.writeFileSync("current.png", imgBuffer);
+
+    
+        if (!fs.existsSync("baseline.png")) {
+            fs.copyFileSync("current.png", "baseline.png");
+            console.log("Baseline image saved.");
+        }
+
+        let img1 = PNG.sync.read(fs.readFileSync("baseline.png"));
+        let img2 = PNG.sync.read(fs.readFileSync("current.png"));
+        let { width, height } = img1;
+        let diff = new PNG({ width, height });
+
+        let numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, width, height, { threshold: 0.1 });
+
+        fs.writeFileSync("diff.png", PNG.sync.write(diff));
+
+        if (numDiffPixels > 0) {
+            console.log(`Visual differences found! Pixels different: ${numDiffPixels}`);
+        } else {
+            console.log("No visual differences found.");
+        }
+
+        driver.quit() 
+     })
+
+ 
+});
+        
 
     it('Login Success', async function () {
         let options = new chrome.Options();
@@ -68,7 +110,7 @@ describe('Google Search Test', function () {
     });
 
     
-});
+
 
 
 
